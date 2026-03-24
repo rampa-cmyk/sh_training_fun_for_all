@@ -5,6 +5,7 @@
     'name': 'Website Mail',
     'category': 'Hidden',
     'summary': 'Website Module for Mail',
+    'author': 'RAMPA',
     'version': '0.1',
     'description': """
 Module holding mail improvements for website. It holds the follow widget.
