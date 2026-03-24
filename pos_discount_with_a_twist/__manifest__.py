@@ -8,7 +8,7 @@
     'category': 'Sales/Point of Sale',
     'sequence': 6,
     'summary': 'Simple Discounts in the Point of Sale ',
-    'author': 'Your Name or Company',
+    'author': 'RAMPA',
     'description': """
 
 This module allows the cashier to quickly give percentage-based
