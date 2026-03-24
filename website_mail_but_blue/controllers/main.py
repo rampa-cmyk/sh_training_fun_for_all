@@ -6,7 +6,7 @@ from odoo.http import request
 
 class WebsiteMail(http.Controller):
 
-    @http.route(['/website_mail/follow'], type='json', auth="public", website=True)
+    @http.route(['/website_mail/follow'], type='jsonrpc', auth="public", website=True)
     def website_message_subscribe(self, id=0, object=None, message_is_follower="on", email=False, **post):
         # TDE FIXME: check this method with new followers
         res_id = int(id)
