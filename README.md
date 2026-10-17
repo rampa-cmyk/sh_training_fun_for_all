@@ -5,4 +5,4 @@ There are somemodule in here taken straight from odoo community, just as example
 
 I just wanted to add some extra text here
 
-I want to test if I can commit this change
+I want to test if I can commit this change 
