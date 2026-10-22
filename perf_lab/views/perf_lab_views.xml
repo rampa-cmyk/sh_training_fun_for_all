@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- NOTE: written for Odoo 18+ (<list>, view_mode "list").
+         For Odoo 17 and older: replace <list> by <tree> and "list,form" by "tree,form". -->
+
+    <!-- Control panel (wizard) -->
+    <record id="perf_lab_control_form" model="ir.ui.view">
+        <field name="name">perf.lab.control.form</field>
+        <field name="model">perf.lab.control</field>
+        <field name="arch" type="xml">
+            <form string="Perf Lab control panel">
+                <sheet>
+                    <div class="alert alert-warning" role="alert">
+                        Training module. Generating data TRUNCATES the perf_lab tables.
+                        Do not install on a database you care about.
+                    </div>
+
+                    <group string="0. Test data">
+                        <group>
+                            <field name="n_customers"/>
+                            <field name="orders_per_customer"/>
+                            <field name="n_events"/>
+                        </group>
+                        <group>
+                            <div>
+                                <button name="action_generate_data" type="object"
+                                        string="Generate / reset test data" class="btn-primary"/>
+                            </div>
+                        </group>
+                    </group>
+
+                    <group string="A. N+1 queries">
+                        <div colspan="2">
+                            <button name="action_run_n_plus_one" type="object"
+                                    string="Run N+1 (slow)" class="btn-danger me-2"/>
+                            <button name="action_run_n_plus_one_fixed" type="object"
+                                    string="Run fixed version" class="btn-success me-2"/>
+                            <span class="text-muted">
+                                Also: open Perf Lab &gt; Customers (slow list) and set the pager to 1-500.
+                            </span>
+                        </div>
+                    </group>
+
+                    <group string="B. Slow SQL query">
+                        <group>
+                            <field name="slow_query_rows"/>
+                            <field name="timeout_s"/>
+                        </group>
+                        <group>
+                            <div>
+                                <button name="action_run_slow_query" type="object"
+                                        string="Run slow query" class="btn-danger me-2"/>
+                                <button name="action_explain_slow_query" type="object"
+                                        string="EXPLAIN ANALYZE" class="btn-secondary me-2"/>
+                            </div>
+                            <div class="mt-2">
+                                <button name="action_create_index" type="object"
+                                        string="Create index (fix)" class="btn-success me-2"/>
+                                <button name="action_drop_index" type="object"
+                                        string="Drop index (break)" class="btn-secondary"/>
+                            </div>
+                        </group>
+                    </group>
+
+                    <group string="C. Typical loop mistakes (bad vs good)">
+                        <group>
+                            <field name="loop_rows"/>
+                        </group>
+                        <group>
+                            <div>
+                                <button name="action_run_loop_scenarios" type="object"
+                                        string="Run all loop scenarios" class="btn-danger"/>
+                            </div>
+                        </group>
+                    </group>
+
+                    <group string="Results">
+                        <field name="result" nolabel="1" colspan="2" readonly="1"/>
+                        <div colspan="2">
+                            <button name="action_clear_results" type="object"
+                                    string="Clear results" class="btn-link"/>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_perf_lab_control" model="ir.actions.act_window">
+        <field name="name">Control panel</field>
+        <field name="res_model">perf.lab.control</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Customers (slow list: N+1 through a computed field) -->
+    <record id="perf_lab_customer_list" model="ir.ui.view">
+        <field name="name">perf.lab.customer.list</field>
+        <field name="model">perf.lab.customer</field>
+        <field name="arch" type="xml">
+            <list string="Customers">
+                <field name="name"/>
+                <field name="country"/>
+                <field name="total_spent_slow"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_perf_lab_customer" model="ir.actions.act_window">
+        <field name="name">Customers (slow list)</field>
+        <field name="res_model">perf.lab.customer</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Orders -->
+    <record id="perf_lab_order_list" model="ir.ui.view">
+        <field name="name">perf.lab.order.list</field>
+        <field name="model">perf.lab.order</field>
+        <field name="arch" type="xml">
+            <list string="Orders">
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="date_order"/>
+                <field name="amount_total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_perf_lab_order" model="ir.actions.act_window">
+        <field name="name">Orders</field>
+        <field name="res_model">perf.lab.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Events -->
+    <record id="perf_lab_event_list" model="ir.ui.view">
+        <field name="name">perf.lab.event.list</field>
+        <field name="model">perf.lab.event</field>
+        <field name="arch" type="xml">
+            <list string="Events">
+                <field name="ref"/>
+                <field name="value"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_perf_lab_event" model="ir.actions.act_window">
+        <field name="name">Events</field>
+        <field name="res_model">perf.lab.event</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_perf_lab_root" name="Perf Lab" sequence="900"
+              groups="base.group_user"/>
+    <menuitem id="menu_perf_lab_control" name="Control panel" sequence="10"
+              parent="menu_perf_lab_root" action="action_perf_lab_control"/>
+    <menuitem id="menu_perf_lab_customer" name="Customers (slow list)" sequence="20"
+              parent="menu_perf_lab_root" action="action_perf_lab_customer"/>
+    <menuitem id="menu_perf_lab_order" name="Orders" sequence="30"
+              parent="menu_perf_lab_root" action="action_perf_lab_order"/>
+    <menuitem id="menu_perf_lab_event" name="Events" sequence="40"
+              parent="menu_perf_lab_root" action="action_perf_lab_event"/>
+</odoo>
