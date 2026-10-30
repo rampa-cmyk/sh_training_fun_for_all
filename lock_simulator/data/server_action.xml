@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="action_simulate_lock_sale_order" model="ir.actions.server">
+            <field name="name">Simulate Lock (30s)</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">
+env.cr.execute("SELECT id FROM sale_order WHERE id = %s FOR UPDATE", [record.id])
+env.cr.execute("SELECT pg_sleep(30)")
+            </field>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">form</field>
+        </record>
+    </data>
+</odoo>
